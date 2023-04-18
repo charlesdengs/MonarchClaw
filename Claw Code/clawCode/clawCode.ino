@@ -6,47 +6,26 @@ USBHost usb;
 DualShock4Controller dualshock(usb);
 
 //Servo position variable
-int servoPosition = 90;
+int servoPosition = -46;
 
 //Create servo
 Servo clawServo;
 
-//Adds angles to open the claw when R1 held
-void r1Pressed(uint16_t buttons)
-{
-  if (buttons & R1)
-  {
-    Serial.println("R1 Pressed");
-    servoPosition += 5;
-  }
 
+void openCloseClaw() {
+  if ((dualshock.state.analogL2 == 255) and (dualshock.state.analogR2 == 0) and (servoPosition >= -90))
+  {
+    servoPosition -= 1;
+    Serial.print(dualshock.state.analogL2);
+  }
+  if ((dualshock.state.analogL2 == 0) and (dualshock.state.analogR2 == 255) and (servoPosition <= 45))
+  {
+    servoPosition += 1;
+    Serial.print(dualshock.state.analogR2);
+  }
+  clawServo.write(servoPosition);
 }
 
-void r1Released(uint16_t buttons)
-{
-  if (buttons & R1)
-  {
-    Serial.println("R1 Released");
-  }
-}
-
-//Adds angles to close claw when L1 held
-void l1Pressed(uint16_t buttons)
-{
-  if (buttons & L1)
-  {
-    Serial.println("L1 Pressed");
-    servoPosition -= 5;
-  }
-}
-
-void l1Released(uint16_t buttons)
-{
-  if (buttons & L1)
-  {
-    Serial.println("L1 Released");
-  }
-}
 
 void setup() {
   // put your setup code here, to run once:
@@ -61,7 +40,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   usb.Task();
-  clawServo.write(servoPosition);
-  
+  openCloseClaw();
+  Serial.println(servoPosition);
 
 }
