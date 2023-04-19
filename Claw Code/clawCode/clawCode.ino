@@ -13,17 +13,18 @@ Servo clawServo;
 
 
 void openCloseClaw() {
-  if ((dualshock.state.analogL2 == 255) and (dualshock.state.analogR2 == 0) and (servoPosition >= -90))
+  if (dualshock.state.l2 and !dualshock.state.r2 and servoPosition >= -90)
   {
     servoPosition -= 1;
-    Serial.print(dualshock.state.analogL2);
+
+
   }
-  if ((dualshock.state.analogL2 == 0) and (dualshock.state.analogR2 == 255) and (servoPosition <= 45))
+  if (dualshock.state.r2 and !dualshock.state.l2 and servoPosition <= 45)
   {
     servoPosition += 1;
-    Serial.print(dualshock.state.analogR2);
+
   }
-  clawServo.write(servoPosition);
+
 }
 
 
@@ -42,5 +43,7 @@ void loop() {
   usb.Task();
   openCloseClaw();
   Serial.println(servoPosition);
+  clawServo.write(servoPosition);
+
 
 }
